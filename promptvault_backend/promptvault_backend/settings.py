@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-nj#tu=oyks)43l7!ejk*^c55^+=gxo72ni)8sl=ga_7+to(*k6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -184,14 +184,27 @@ LOGOUT_REDIRECT_URL = '/' # Where to redirect after logout (Django's perspective
 
 # settings.py
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',           # e.g. aptitude_db
+#         'USER': 'postgres',           # e.g. postgres
+#         'PASSWORD': '1243',   # e.g. your password
+#         'HOST': 'localhost',              # or the actual DB host
+#         'PORT': '5432',                   # default PostgreSQL port
+#     }
+# }
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',           # e.g. aptitude_db
-        'USER': 'postgres',           # e.g. postgres
-        'PASSWORD': '1243',   # e.g. your password
-        'HOST': 'localhost',              # or the actual DB host
-        'PORT': '5432',                   # default PostgreSQL port
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': os.getenv('SUPABASE_DB_PASSWORD'),  # From environment variable
+        'HOST': 'db.qjzluxzgmhmirtaajldk.supabase.co',
+        'PORT': '5432',
+        'OPTIONS': {'sslmode': 'require'},
     }
 }
 
