@@ -8,8 +8,10 @@ import TrendingPrompts from './components/TrendingPrompts';
 
 function App() {
   const { user, logout } = useAuth();
-  const googleLoginUrl = 'http://127.0.0.1:8000/accounts/google/login/';
-  const djangoLogoutUrl = 'http://127.0.0.1:8000/accounts/logout/';
+  const debug = true;
+  const address = debug ? 'http://127.0.0.1:8000' : 'https://promptvault.onrender.com/';
+  const googleLoginUrl = `${address}/accounts/google/login/`;
+  const djangoLogoutUrl = `${address}/accounts/logout/`;
 
   const handleLogout = () => {
     logout(); // Clears frontend state

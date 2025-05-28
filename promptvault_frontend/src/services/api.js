@@ -18,8 +18,11 @@ function getCSRFToken() {
   return cookieValue;
 }
 
+
+const debug = false;
+const address  = debug ? "http://127.0.0.1:8000" : "https://promptvault.onrender.com";
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: `${address}/api`,
   withCredentials: true, // ✅ send cookies
 });
 
