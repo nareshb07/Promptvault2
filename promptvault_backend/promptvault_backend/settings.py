@@ -203,10 +203,10 @@ LOGOUT_REDIRECT_URL = '/' # Where to redirect after logout (Django's perspective
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': os.getenv('SUPABASE_DB_PASSWORD'),  # From environment variable
-        'HOST': 'db.qjzluxzgmhmirtaajldk.supabase.co',
+        'NAME': 'promptsdatabase',
+        'USER': 'naresh',
+        'PASSWORD': 'dpg-d0rm57re5dus73ahj8fg-a',  # From environment variable
+        'HOST': 'dpg-d0rm57re5dus73ahj8fg-a',
         'PORT': '5432',
         'OPTIONS': {'sslmode': 'require'},
     }
