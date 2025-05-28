@@ -113,7 +113,7 @@ REST_FRAMEWORK = {
     )
 }
 
-SITE_ID = 2      # added 
+SITE_ID = 3     # added 
 ROOT_URLCONF = 'promptvault_backend.urls'
 
 TEMPLATES = [
@@ -172,9 +172,12 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+
+DOMAIN = 'promptvault.onrender.com'
+FRONTEND_URL = 'https://promptvault2-git-main-nareshs-projects-e3994710.vercel.app'
 # Redirect URLs (important for SPA like React)
-LOGIN_REDIRECT_URL = '/'  # Where to redirect after login (Django's perspective)
-LOGOUT_REDIRECT_URL = '/' # Where to redirect after logout (Django's perspective)
+LOGIN_REDIRECT_URL = f"{FRONTEND_URL}/"  # Where to redirect after login (Django's perspective)
+LOGOUT_REDIRECT_URL = f"{FRONTEND_URL}/"# Where to redirect after logout (Django's perspective)
 # For SPA, you'll often handle redirects on the frontend after getting a token.
 # We'll adjust this later if needed when integrating with React.
 
@@ -188,29 +191,29 @@ LOGOUT_REDIRECT_URL = '/' # Where to redirect after logout (Django's perspective
 
 # settings.py
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',           # e.g. aptitude_db
-#         'USER': 'postgres',           # e.g. postgres
-#         'PASSWORD': '1243',   # e.g. your password
-#         'HOST': 'localhost',              # or the actual DB host
-#         'PORT': '5432',                   # default PostgreSQL port
-#     }
-# }
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'promptsdatabase',
-        'USER': 'naresh',
-        'PASSWORD': 'dpg-d0rm57re5dus73ahj8fg-a',  # From environment variable
-        'HOST': 'dpg-d0rm57re5dus73ahj8fg-a',
-        'PORT': '5432',
-        'OPTIONS': {'sslmode': 'require'},
+        'NAME': 'postgres',           # e.g. aptitude_db
+        'USER': 'postgres',           # e.g. postgres
+        'PASSWORD': '1243',   # e.g. your password
+        'HOST': 'localhost',              # or the actual DB host
+        'PORT': '5432',                   # default PostgreSQL port
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'promptsdatabase',
+#         'USER': 'naresh',
+#         'PASSWORD': 'dpg-d0rm57re5dus73ahj8fg-a',  # From environment variable
+#         'HOST': 'dpg-d0rm57re5dus73ahj8fg-a',
+#         'PORT': '5432',
+#         'OPTIONS': {'sslmode': 'require'},
+#     }
+# }
 
 
 # DATABASES = {
