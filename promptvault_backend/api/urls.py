@@ -9,6 +9,7 @@ from .views import (
     trending_prompts,
     downvote_prompt,
     upvote_prompt,
+    get_csrf_token
 )
 
 router = DefaultRouter()
@@ -22,6 +23,7 @@ custom_urlpatterns = [
     path('prompts/<int:pk>/downvote/', downvote_prompt, name='prompt-downvote'),
     path('prompts/<int:pk>/remove_vote/', remove_vote, name='remove-vote'),
     path('prompts/copy/<int:prompt_id>/', copy_prompt, name='copy-prompt'),
+    path('csrf/', get_csrf_token),
 ]
 
 urlpatterns = [
