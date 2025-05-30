@@ -8,10 +8,26 @@ import TrendingPrompts from './components/TrendingPrompts';
 
 function App() {
   const { user, logout } = useAuth();
-  const debug = true;
-  const address = debug ? 'http://127.0.0.1:8000' : 'https://promptvault.onrender.com/';
+  const debug = false; // Set to true for local development
+
+  const address = debug
+    ? 'http://127.0.0.1:8000' // Local Django backend
+    : 'https://promptvault.onrender.com/'; // Deployed backend
+
+  console.log(address);
+
   const googleLoginUrl = `${address}/accounts/google/login/`;
+  console.log(googleLoginUrl);
+
   const djangoLogoutUrl = `${address}/accounts/logout/`;
+
+
+  useEffect(() => {
+    apiClient.get("/csrf/")
+      .then(() => console.log("✅ CSRF cookie set"))
+      .catch((err) => console.error("❌ CSRF setup failed", err));
+  }, []);
+
 
   const handleLogout = () => {
     logout(); // Clears frontend state
