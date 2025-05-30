@@ -12,6 +12,17 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+
+import dj_database_url
+
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv("DATABASE_URL")
+    )
+}
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -193,16 +204,16 @@ LOGOUT_REDIRECT_URL = f"{FRONTEND_URL}/"# Where to redirect after logout (Django
 
 # settings.py
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',           # e.g. aptitude_db
-        'USER': 'postgres',           # e.g. postgres
-        'PASSWORD': '1243',   # e.g. your password
-        'HOST': 'localhost',              # or the actual DB host
-        'PORT': '5432',                   # default PostgreSQL port
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'postgres',           # e.g. aptitude_db
+#         'USER': 'postgres',           # e.g. postgres
+#         'PASSWORD': '1243',   # e.g. your password
+#         'HOST': 'localhost',              # or the actual DB host
+#         'PORT': '5432',                   # default PostgreSQL port
+#     }
+# }
 
 
 # DATABASES = {
