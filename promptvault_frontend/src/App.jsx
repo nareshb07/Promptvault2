@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import MyPromptsPage from './pages/MyPromptsPage';
 import TrendingPrompts from './components/TrendingPrompts';
 import { useEffect } from 'react';
+import apiClient from './services/api';
 
 
 function App() {
