@@ -4,6 +4,7 @@ import { useAuth } from './AuthContext';
 import HomePage from './pages/HomePage';
 import MyPromptsPage from './pages/MyPromptsPage';
 import TrendingPrompts from './components/TrendingPrompts';
+import { useEffect } from 'react';
 
 
 function App() {

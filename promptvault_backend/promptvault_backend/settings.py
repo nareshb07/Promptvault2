@@ -54,12 +54,11 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
@@ -93,18 +92,21 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173", # Your React app's development URL
     "http://127.0.0.1:5173",
-    "https://prompt-vault-rj17-296nm63zu-nareshs-projects-e3994710.vercel.app",
+    "https://promptvault2.vercel.app/",
     # Also add this for consistency
 ]
+
+
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173', # Add this if it's missing or incorrect
+    "https://promptvault2.vercel.app",
 ]
 # OR for very open development (less secure, use specific origins for production)
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_CREDENTIALS = True # IMPORTANT: This allows cookies to be sent cross-origin
+# CORS_ALLOW_CREDENTIALS = True # IMPORTANT: This allows cookies to be sent cross-origin
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
