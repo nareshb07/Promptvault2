@@ -119,12 +119,15 @@ class TagViewSet(viewsets.ModelViewSet):
 # ======================
 # User Info API
 # ======================
+from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def current_user_api(request):
+    logger.info("Current user requested by %s", request.user.username)
+    logger.info("Session ID: %s", request.session.session_key)
+    logger.info("CSRF Token: %s", request.META.get('HTTP_X_CSRFTOKEN'))
     serializer = UserSerializer(request.user)
-    logger.info("Current user requested by %s", request.user.username)  # ✅ Logging added
     return Response(serializer.data)
 
 # ======================

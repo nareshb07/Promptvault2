@@ -8,13 +8,15 @@ import { useEffect } from 'react';
 import apiClient from './services/api';
 
 
+// require('dotenv').config()
+
 function App() {
   const { user, logout } = useAuth();
-  const debug = false; // Set to true for local development
+   // Set to true for local development
 
-  const address = debug
+const address = import.meta.env.VITE_APP_DEBUG
     ? 'http://127.0.0.1:8000' // Local Django backend
-    : 'https://promptvault.onrender.com/'; // Deployed backend
+    : 'https://promptvault.onrender.com'; // Deployed backend
 
   console.log(address);
 

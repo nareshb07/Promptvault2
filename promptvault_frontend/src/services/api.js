@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 // Function to get csrf token from cookies
@@ -19,11 +20,12 @@ function getCSRFToken() {
 }
 
 
-const debug = false;
+const debug = import.meta.env.VITE_APP_DEBUG;
 const address  = debug ? "http://127.0.0.1:8000" : "https://promptvault.onrender.com";
 const apiClient = axios.create({
   baseURL: `${address}/api`,
   withCredentials: true, // ✅ send cookies
+  
 });
 
 // Attach CSRF token to every request
@@ -39,3 +41,4 @@ apiClient.interceptors.request.use(
 );
 
 export default apiClient;
+

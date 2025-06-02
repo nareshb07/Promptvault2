@@ -18,9 +18,19 @@ import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv("DATABASE_URL")
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600  # Optional: improve performance
     )
 }
+# DATABASE_URL = "postgresql://naresh:dm3Xc9lvM8KoFKRaOCBDYyAsfMuF9260@dpg-d0rm57re5dus73ahj8fg-a.oregon-postgres.render.com/promptsdatabase"
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=DATABASE_URL,
+#         conn_max_age=600  # Optional: improve performance
+#     )
+# }
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +44,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-nj#tu=oyks)43l7!ejk*^c55^+=gxo72ni)8sl=ga_7+to(*k6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -78,53 +88,62 @@ MIDDLEWARE = [
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-## not production safe
-# SESSION_COOKIE_SAMESITE = 'Lax' # Or 'None' if using HTTPS
-# CSRF_COOKIE_SAMESITE = 'Lax'    # Or 'None' if using HTTPS
-# If you set SameSite='None', you MUST also set:
-# SESSION_COOKIE_SECURE = True (Requires HTTPS)
-# CSRF_COOKIE_SECURE = True (Requires HTTPS)
-# ... other settings ...
 
-#  Explicitly set HttpOnly for security, though it's default
-# SESSION_COOKIE_HTTPONLY = True
-# CSRF_COOKIE_HTTPONLY = False # CSRF token needs to be readable by JS if you fetch it
 
-# SESSION_COOKIE_SAMESITE = 'None'
-# # SESSION_COOKIE_SECURE = False # For HTTP development ONLY
-# CSRF_COOKIE_SAMESITE = 'None' # Match this for consistency if needed
-# # CSRF_COOKIE_SECURE = False 
+# DOMAIN = 'promptvault.onrender.com'  
+# FRONTEND_URL = 'https://promptvault2.vercel.app'
+FRONTEND_URL = 'http://localhost:5173'
 
-# # For development, ensure Secure flags are False if not using HTTPS
-# SESSION_COOKIE_SECURE = False
-# CSRF_COOKIE_SECURE = False
-
-# CORS Configuration
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173", # Your React app's development URL
-    "http://127.0.0.1:5173",
-    "https://promptvault2.vercel.app/",
-    # Also add this for consistency
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
-
-
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
-    'http://127.0.0.1:5173', # Add this if it's missing or incorrect
-    "https://promptvault2.vercel.app",
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:8000',
+    FRONTEND_URL,
 ]
-# OR for very open development (less secure, use specific origins for production)
-CORS_ALLOW_CREDENTIALS = True
 
-# CORS_ALLOW_CREDENTIALS = True # IMPORTANT: This allows cookies to be sent cross-origin
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_DOMAIN = None
 
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_HEADER_NAME = 'X-CSRFToken'
+CSRF_USE_SESSIONS = False
+
+# Add CORS specific settings
+
+
+# Update REST_FRAMEWORK settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-       
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
     )
 }
+
 
 SITE_ID = 3     # added 
 ROOT_URLCONF = 'promptvault_backend.urls'
@@ -186,8 +205,9 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-DOMAIN = 'promptvault.onrender.com'
-FRONTEND_URL = 'https://promptvault2-git-main-nareshs-projects-e3994710.vercel.app'
+# DOMAIN = 'promptvault.onrender.com'
+
+# FRONTEND_URL = 'http://localhost:5173/'
 # Redirect URLs (important for SPA like React)
 LOGIN_REDIRECT_URL = f"{FRONTEND_URL}/"  # Where to redirect after login (Django's perspective)
 LOGOUT_REDIRECT_URL = f"{FRONTEND_URL}/"# Where to redirect after logout (Django's perspective)
@@ -273,7 +293,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -308,3 +328,41 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_DOMAIN = None
+
+# CORS settings
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173'
+]
+
+# CSRF settings
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_DOMAIN = None
+CSRF_HEADER_NAME = 'X-CSRFToken'
+
+# Session settings
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_DOMAIN = None
+
+# Trusted origins
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173'
+]
+
+
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_DOMAIN = None
+CORS_ALLOW_ALL_ORIGINS = True
