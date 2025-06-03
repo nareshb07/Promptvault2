@@ -10,6 +10,18 @@ export default defineConfig({
   server: {
     host: 'localhost',
     port: 5173,
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173,
+      clientPort: 5173,
+      timeout: 5000,
+      overlay: true
+    },
+    watch: {
+      usePolling: false,
+      interval: 1000
+    },
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',
@@ -19,4 +31,19 @@ export default defineConfig({
       }
     }
   },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+    exclude: ['@vitejs/plugin-react-swc']
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['react-toastify']
+        }
+      }
+    }
+  }
 })

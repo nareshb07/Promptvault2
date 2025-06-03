@@ -4,6 +4,19 @@ from django.contrib.auth.models import User # Assuming this is used for UserSeri
 from .models import Prompt, Tag,PromptVote # Make sure Vote is imported if needed elsewhere
 import logging
 
+
+
+class UserSerilizer(serializers.ModelSerializer):
+    class meta:
+        model = User
+        fields = ["id", "username", "password"]
+        extra_kwargs = {"password" :{"write_only": True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data) 
+        return user
+
+
 logger = logging.getLogger(__name__) 
 class TagSerializer(serializers.ModelSerializer): # This is already good
     class Meta:
@@ -107,10 +120,10 @@ class PromptSerializer(serializers.ModelSerializer):
         return instance
 
 # Your UserSerializer can remain as is
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email']
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'email']
 
 
 

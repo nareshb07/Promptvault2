@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 import dj_database_url
 
@@ -70,13 +71,15 @@ INSTALLED_APPS = [
 
     'rest_framework',  # Add this
     'api.apps.ApiConfig',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', 
+    
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -94,8 +97,33 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # FRONTEND_URL = 'https://promptvault2.vercel.app'
 FRONTEND_URL = 'http://localhost:5173'
 
-CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+
+# Update REST_FRAMEWORK settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
+
+
+SIMPLE_JWT =  {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+
+
+}
+
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -115,35 +143,6 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
-
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:8000',
-    FRONTEND_URL,
-]
-
-CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_DOMAIN = None
-
-CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_HEADER_NAME = 'X-CSRFToken'
-CSRF_USE_SESSIONS = False
-
-# Add CORS specific settings
-
-
-# Update REST_FRAMEWORK settings
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    )
-}
-
 
 SITE_ID = 3     # added 
 ROOT_URLCONF = 'promptvault_backend.urls'
@@ -200,17 +199,21 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': { # Additional authentication parameters
             'access_type': 'online',
-        }
+        },
+        'OAUTH_PKCE_ENABLED': True,
+        'FETCH_USERINFO' : True
     }
 }
+
+SOCIALACCOUNT_STORE_TOEKNS = True
 
 
 # DOMAIN = 'promptvault.onrender.com'
 
 # FRONTEND_URL = 'http://localhost:5173/'
 # Redirect URLs (important for SPA like React)
-LOGIN_REDIRECT_URL = f"{FRONTEND_URL}/"  # Where to redirect after login (Django's perspective)
-LOGOUT_REDIRECT_URL = f"{FRONTEND_URL}/"# Where to redirect after logout (Django's perspective)
+LOGIN_REDIRECT_URL = '/callback/'  # Where to redirect after login (Django's perspective)
+# LOGOUT_REDIRECT_URL = f"{FRONTEND_URL}/"# Where to redirect after logout (Django's perspective)
 # For SPA, you'll often handle redirects on the frontend after getting a token.
 # We'll adjust this later if needed when integrating with React.
 
@@ -329,40 +332,3 @@ LOGGING = {
     },
 }
 
-
-
-CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_DOMAIN = None
-
-# CORS settings
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173'
-]
-
-# CSRF settings
-CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_DOMAIN = None
-CSRF_HEADER_NAME = 'X-CSRFToken'
-
-# Session settings
-SESSION_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_DOMAIN = None
-
-# Trusted origins
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173'
-]
-
-
-CSRF_COOKIE_SAMESITE = 'Lax'
-CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_DOMAIN = None
-CORS_ALLOW_ALL_ORIGINS = True

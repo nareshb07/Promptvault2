@@ -11,14 +11,152 @@ from datetime import timedelta
 import math
 import logging
 from .models import Prompt, Tag, PromptVote
-from .serializers import PromptSerializer, TagSerializer, UserSerializer
+from .serializers import PromptSerializer, TagSerializer, UserSerilizer
 from datetime import datetime
 from .pagination import TrendingPromptsPagination
 from django.http import HttpResponse
-
-
 from django.http import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
+import json
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
+
+class UserCreate(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerilizer
+    permission_classes = [IsAuthenticated]
+
+class UserDetailView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerilizer
+
+    def get_object(self):
+        return self.request.user 
+
+
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
+from django.conf import settings
+from allauth.socialaccount.models import SocialAccount, SocialToken
+from rest_framework_simplejwt.tokens import RefreshToken
+from dotenv import load_dotenv
+import os
+from allauth.socialaccount.models import SocialLogin
+load_dotenv()
+
+
+import urllib.parse
+
+
+# GOOGLE_LOGIN_REDIRECT_URL = "http://localhost:5173//"
+GOOGLE_LOGIN_URL = (
+    "https://accounts.google.com/o/oauth2/v2/auth?"
+    "response_type=code&"
+    f"client_id={os.getenv("GOOGLE_CLIENT_ID")}&"
+    "redirect_uri=http://localhost:8000/accounts/google/login/callback/&"
+    "scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile&"
+    "state=random-state-string&"
+    "prompt=consent"
+)  # Your frontend URL
+
+
+GOOGLE_LOGIN_REDIRECT_URL = "http://localhost:5173/callback"
+
+def google_login_callback(request):
+    user = request.user
+
+    try:
+        social_account = SocialAccount.objects.get(user=user, provider='google')
+        print("✅ Social Account Found:", social_account)
+
+        token = SocialToken.objects.filter(account=social_account).first()
+        if token:
+            print("✅ Google token found:", token.token)
+        else:
+            print("❌ No Google token found, falling back to JWT only")
+
+        # Always generate a JWT token
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        # Set tokens in cookies
+        response = HttpResponseRedirect(GOOGLE_LOGIN_REDIRECT_URL)
+        response.set_cookie(
+            key='access_token',
+            value=access_token,
+            httponly=False,
+            secure=False,
+            samesite='none',
+            domain='localhost',
+            path='/'
+        )
+        response.set_cookie(
+            key='refresh_token',
+            value=str(refresh),
+            httponly=True,
+            secure=False,
+            samesite='none',
+            domain='localhost',
+            path='/'
+        )
+
+        return response
+
+    except SocialAccount.DoesNotExist:
+        print(" No Google social account for user:", user)
+        print("❌ No Google social account for user:", user)
+        return HttpResponseRedirect(f"{GOOGLE_LOGIN_REDIRECT_URL}?error=NoSocialAccount")
+
+#     return response
+    
+# @login_required
+# def google_login_callback(request):
+#     user = request.user
+
+#     social_accounts = SocialAccount.objects.filter(user = user)
+#     print("Social Account for user:", social_accounts) 
+
+#     social_account = social_account.first() 
+
+#     if not social_account :
+#         print("No social account for user :", user)
+#         return redirect('http://localhost:8000/login/callback/?error=NoSocialAccount')
+    
+#     token = SocialToken.objects.filter(accounts = social_account, account_providers='google').first()
+
+#     if token:
+#         print('Google token found: ', token.token)
+#         refresh = RefreshToken.for_user(user)
+#         access_token = str(refresh.access_token)
+#         return redirect(f'http://localhost:8000/login/callback/?access_token={access_token}')
+#     else:
+#         print("No Google Token found for user", user)
+#         return redirect(f'http://localhost:8000/login/callback/?error=NoGoogleToken')
+    
+@csrf_exempt
+def validate_google_token(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            google_access_token = data.get('access_token')
+            print(google_access_token)
+
+            if not google_access_token:
+                return JsonResponse({'detail': 'Access Token is missing.'}, status=400)
+            return JsonResponse({'valid' : True})
+        except json.JSONDecodeError:
+            return JsonResponse({'detail': 'Invalid JSON.'}, status=400)
+    return JsonResponse({'detail':'Method not allowed.'}, status=405)
+
+
+
+
+
+
+
 
 @ensure_csrf_cookie
 def get_csrf_token(request):

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import apiClient from '../services/api';
 import Icons from "../Icons/Icons";
 import { toast, ToastContainer } from 'react-toastify'; // 👈 Added ToastContainer
-import 'react-toastify/dist/ReactToastify.css';
+// import 'react-toastify/dist/ReactToastify.css';
 
 const TrendingPrompts = () => {
   const [prompts, setPrompts] = useState([]);
