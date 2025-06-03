@@ -20,6 +20,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.contrib.auth import get_user_model
+from django.shortcuts import redirect
 
 
 User = get_user_model()
@@ -51,32 +52,33 @@ load_dotenv()
 import urllib.parse
 
 
-# GOOGLE_LOGIN_REDIRECT_URL = "http://localhost:5173//"
-GOOGLE_LOGIN_URL = (
-    "https://accounts.google.com/o/oauth2/v2/auth?"
-    "response_type=code&"
-    f"client_id={os.getenv("GOOGLE_CLIENT_ID")}&"
-    "redirect_uri=http://localhost:8000/accounts/google/login/callback/&"
-    "scope=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile&"
-    "state=random-state-string&"
-    "prompt=consent"
-)  # Your frontend URL
 
 
 GOOGLE_LOGIN_REDIRECT_URL = "http://localhost:5173/callback"
 
+
 def google_login_callback(request):
     user = request.user
 
-    try:
-        social_account = SocialAccount.objects.get(user=user, provider='google')
-        print("✅ Social Account Found:", social_account)
+    if not user.is_authenticated:
+        return HttpResponseRedirect(f"{GOOGLE_LOGIN_REDIRECT_URL}?error=NotAuthenticated")
 
+    try:
+        # Get the user's Google social account
+        social_accounts = SocialAccount.objects.filter(user=user, provider='google')
+        print("✅ Social Account Found:", social_accounts)
+
+        social_account = social_accounts.first()
+        if not social_account:
+            print("❌ No Google social account for user:", user)
+            return HttpResponseRedirect(f"{GOOGLE_LOGIN_REDIRECT_URL}?error=NoSocialAccount")
+
+        # Try to get the saved Google token
         token = SocialToken.objects.filter(account=social_account).first()
         if token:
-            print("✅ Google token found:", token.token)
+            print('✅ Google token found:', token.token)
         else:
-            print("❌ No Google token found, falling back to JWT only")
+            print('⚠️  No Google token found — falling back to JWT only')
 
         # Always generate a JWT token
         refresh = RefreshToken.for_user(user)
@@ -87,28 +89,25 @@ def google_login_callback(request):
         response.set_cookie(
             key='access_token',
             value=access_token,
-            httponly=False,
-            secure=False,
-            samesite='none',
-            domain='localhost',
+            httponly=False,  # Allow frontend to read
+            secure=False,   # Use True in production with HTTPS
+            samesite='Lax', # Prevent CSRF issues
             path='/'
         )
         response.set_cookie(
             key='refresh_token',
             value=str(refresh),
-            httponly=True,
+            httponly=True,  # Don't expose to JS
             secure=False,
-            samesite='none',
-            domain='localhost',
+            samesite='Lax',
             path='/'
         )
 
         return response
 
-    except SocialAccount.DoesNotExist:
-        print(" No Google social account for user:", user)
-        print("❌ No Google social account for user:", user)
-        return HttpResponseRedirect(f"{GOOGLE_LOGIN_REDIRECT_URL}?error=NoSocialAccount")
+    except Exception as e:
+        print("🚨 Error during Google login callback:", str(e))
+        return HttpResponseRedirect(f"{GOOGLE_LOGIN_REDIRECT_URL}?error={str(e)}")
 
 #     return response
     

@@ -13,16 +13,26 @@ from django.dispatch import receiver
 from allauth.socialaccount.signals import pre_social_login
 from allauth.socialaccount.models import SocialToken
 
+
 @receiver(pre_social_login)
-def handle_google_token(sender, request, sociallogin, **kwargs):
+def capture_google_token(sender, request, sociallogin, **kwargs):
     print("📥 Google Login Detected")
-    print("User:", sociallogin.user)
-    print("Provider:", sociallogin.account.provider)
-
-    # Check if token already exists
-    try:
-        token = SocialToken.objects.get(account=sociallogin.account)
-        print("✅ Token already exists:", token.token)
-    except SocialToken.DoesNotExist:
-        print("❌ No token exists for this login yet")
-
+    account = sociallogin.account
+    if account.provider == 'google':
+        try:
+            token = SocialToken.objects.get(account=account)
+            print("✅ Token already exists:", token.token)
+        except SocialToken.DoesNotExist:
+            print("❌ No token exists — attempting manual save...")
+            try:
+                # Try to save the token manually
+                app = account.app  # This should be set
+                token = SocialToken.objects.create(
+                    app=app,
+                    account=account,
+                    token=sociallogin.token.token,
+                    token_secret=sociallogin.token.token_secret or ""
+                )
+                print("✅ Forced saved Google token:", token.token)
+            except Exception as e:
+                print("🚨 Failed to force save token:", str(e))

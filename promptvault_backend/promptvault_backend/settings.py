@@ -144,7 +144,7 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-SITE_ID = 3     # added 
+SITE_ID = 5     # added 
 ROOT_URLCONF = 'promptvault_backend.urls'
 
 TEMPLATES = [
@@ -198,14 +198,16 @@ SOCIALACCOUNT_PROVIDERS = {
             'email',  
         ],
         'AUTH_PARAMS': { # Additional authentication parameters
-            'access_type': 'online',
+            'access_type': 'offline',
+            "prompt": "consent"
+            
         },
         'OAUTH_PKCE_ENABLED': True,
         'FETCH_USERINFO' : True
     }
 }
 
-SOCIALACCOUNT_STORE_TOEKNS = True
+SOCIALACCOUNT_STORE_TOKENS = True
 
 
 # DOMAIN = 'promptvault.onrender.com'
